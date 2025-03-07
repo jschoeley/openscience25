@@ -1,0 +1,50 @@
+# General ---------------------------------------------------------------------
+
+pvt
+
+# Ignore dotted files and folders ---------------------------------------------
+
+# ignore all . files and . folders
+#.*
+
+# don't ignore .gitignore
+!/.gitignore
+
+# R specific ------------------------------------------------------------------
+
+# History files
+#.Rhistory
+#.Rapp.history
+
+# RStudio files
+#.Rproj.user/
+#.Rproj.user
+#.Rproj
+
+# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
+#.httr-oauth
+
+# Example code in package build process
+#*-Ex.R
+
+# produced vignettes
+#vignettes/*.html
+#vignettes/*.pdf
+
+# cached Rmarkdown files
+#*_cache
+
+# Rpubs
+#rsconnect
+
+# Latex -----------------------------------------------------------------------
+
+*synctex.gz
+
+# VSCode ----------------------------------------------------------------------
+
+.code-workspace
+
+# Misc ------------------------------------------------------------------------
+
+.~lock*
