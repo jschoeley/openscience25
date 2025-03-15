@@ -20,6 +20,11 @@ Jonas Schöley & Egor Kotov
 	3. Configuration files
 	4. Comments
 
+### Examples
+
+- [Example 1-1](https://github.com/jschoeley/openscience25/tree/main/layer1-personal/example_1-1)
+- [Project template](https://github.com/jschoeley/openscience25/tree/main/layer1-personal/template/template.zip)
+
 ### Exercises
 
 ## Layer 2: Communal reproducibility

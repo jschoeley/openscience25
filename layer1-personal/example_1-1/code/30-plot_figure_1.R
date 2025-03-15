@@ -1,3 +1,7 @@
+# Create Figure 1
+# Demonstration of the ternary balance scheme showing the composition of
+# educational attainment by region in Europe, 2016
+
 # Libraries -------------------------------------------------------
 
 library(yaml)
@@ -12,7 +16,7 @@ library(ggtern)
 # input and output paths
 paths <- list()
 paths$input <- list(
-  config = './code/config.yaml',
+  config = './code/_config.yaml',
   ternary_functions.R = './code/_define_ternary_functions.R',
   euro_basemap.rds = './data/20-euro_basemap.rds',
   euro_education.csv = './data/10-euro_education.csv',

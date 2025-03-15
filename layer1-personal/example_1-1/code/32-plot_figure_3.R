@@ -1,3 +1,8 @@
+# Create Figure 3
+# Different representations of the color key for the
+# (centered) ternary balance scheme showing the workforce composition by
+# region in Europe, 2016.
+
 # Libraries -------------------------------------------------------
 
 library(yaml)
@@ -10,7 +15,7 @@ library(ggtern)
 # input and output paths
 paths <- list()
 paths$input <- list(
-  config = './code/config.yaml',
+  config = './code/_config.yaml',
   ternary_functions.R = './code/_define_ternary_functions.R',
   euro_sectors_colors_noncentered.rds = './output/31-euro_sectors_colors_noncentered.rds',
   euro_sectors_colors_centered.rds = './output/31-euro_sectors_colors_centered.rds'

@@ -1,6 +1,4 @@
 # Download geodata for European NUTS-2 regions with added variables
-# Jonas Schöley
-# 2020-03-05
 
 # Libraries -------------------------------------------------------
 
@@ -17,7 +15,7 @@ library(stringi)
 # input and output paths
 paths <- list()
 paths$input <- list(
-  config = './code/config.yaml'
+  config = './code/_config.yaml'
 )
 paths$output <- list(
   euro_geo_nuts2.rds = './data/10-euro_geo_nuts2.rds',

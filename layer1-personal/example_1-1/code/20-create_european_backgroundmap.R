@@ -1,6 +1,4 @@
 # Create a flat map of Europe
-# Jonas Schöley
-# 2020-03-05
 
 # Libraries -------------------------------------------------------
 
@@ -17,7 +15,7 @@ library(ggplot2)
 # input and output paths
 paths <- list()
 paths$input <- list(
-  config = './code/config.yaml'
+  config = './code/_config.yaml'
   
 )
 paths$output <- list(

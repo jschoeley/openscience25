@@ -1,3 +1,8 @@
+# Create Figure 2
+# Demonstration of the centered ternary balance scheme in comparison
+# with the non-centered scheme showing the workforce composition by
+# region in Europe, 2016
+
 # Libraries -------------------------------------------------------
 
 library(yaml)
@@ -12,7 +17,7 @@ library(ggtern)
 # input and output paths
 paths <- list()
 paths$input <- list(
-  config = './code/config.yaml',
+  config = './code/_config.yaml',
   ternary_functions.R = './code/_define_ternary_functions.R',
   euro_basemap.rds = './data/20-euro_basemap.rds',
   euro_sectors.csv = './data/10-euro_sectors.csv',
