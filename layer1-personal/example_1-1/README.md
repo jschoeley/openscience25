@@ -1,7 +1,6 @@
-# Schöley (2021): "The centered ternary balance scheme"
+# Schöley (2021): The centered ternary balance scheme
 
-[![Paper DOI](https://img.shields.io/badge/Paper_DOI-
-10.4054/DemRes.2021.44.19-%23005462?style=flat-square)](https://doi.org/10.4054/DemRes.2021.44.19)
+[![Paper DOI](https://img.shields.io/badge/Paper_DOI-10.4054/DemRes.2021.44.19-%23005462?style=flat-square)](https://doi.org/10.4054/DemRes.2021.44.19)
 
 
 This is a repository to accompany 'The centered ternary balance scheme', published in [Demographic Research](https://doi.org/10.4054/DemRes.2021.44.19).
