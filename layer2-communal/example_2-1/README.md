@@ -3,6 +3,8 @@
 [![Paper DOI](https://img.shields.io/badge/Paper_DOI-10.4054/DemRes.2021.44.19-%23005462?style=flat-square)](https://doi.org/10.4054/DemRes.2021.44.19)
 [![Data DOI](https://img.shields.io/badge/Zenodo_DOI-10.5281/zenodo.15033155-%23005462?style=flat-square)](https://doi.org/10.5281/zenodo.15033155)
 
+![](readme.png)
+
 This is a repository to accompany 'The centered ternary balance scheme', published in [Demographic Research](https://doi.org/10.4054/DemRes.2021.44.19).
 
 ## Structure
