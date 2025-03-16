@@ -1,0 +1,360 @@
+---
+title: "Visualizing differences between a ternary composition and its center"
+author: "Jonas Schoeley"
+date: "December 18, 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r include=FALSE}
+# Init -------------------------------------------------------------------------
+knitr::opts_chunk$set(echo = TRUE)
+library(ggtern)
+
+# Functions --------------------------------------------------------------------
+
+#' Geometric Mean
+#'
+#' Calculate the geometric mean for a numeric vector.
+#'
+#' @param x Numeric vector.
+#' @param na.rm Should NAs be removed? (default=TRUE)
+#' @param zero.rm Should zeros be removed? (default=TRUE)
+#'
+#' @return The geometric mean as numeric scalar.
+#'
+#' @examples
+#' GeometricMean(0:100)
+#' GeometricMean(0:100, zero.rm = FALSE)
+#'
+#' @keywords internal
+GeometricMean <- function (x, na.rm = TRUE, zero.rm = TRUE) {
+  # The geometric mean can't really deal with elements equal to 0.
+  # This option removes 0 elements from the vector.
+  if (zero.rm) { x = x[x!=0] }
+  return(exp(mean(log(x), na.rm = na.rm)))
+}
+
+#' Center Composition
+#'
+#' Center a compositional data set around its mean.
+#'
+#' @param P n by m matrix of compositions {p1, ..., pm}_i for
+#'          i=1,...,n.
+#'
+#' @return n by m matrix of centered compositions.
+#'
+#' @examples
+#' P <- prop.table(matrix(runif(300), 100), margin = 1)
+#' Centre(P)
+#'
+#' @references Von Eynatten, H., Pawlowsky-Glahn, V., & Egozcue, J. J. (2002).
+#' Understanding perturbation on the simplex: A simple method to better
+#' visualize and interpret compositional data in ternary diagrams.
+#' Mathematical Geology, 34(3), 249-257.
+#'
+#' @keywords internal
+Centre <- function (P) {
+  # calculate the geometric mean for each element of the composition
+  g = apply(P, MARGIN = 2, FUN = GeometricMean)
+  # the closed vector of geometric means is the mean (centroid)
+  # of the compositional data set
+  centre = g/sum(g)
+  # perturbating the original composition by the inverse
+  # centroid centers the composition around the centroid
+  return(prop.table(t(t(P)*(1/centre)), margin = 1))
+}
+
+#' Coordinates and Labels for the Centered Gridlines of a Ternary Diagram
+TernaryCentroidGrid <- function (centroid) {
+
+  # centroid percent difference labels
+  labels = seq(-1, 1, 0.1)
+  labels = data.frame(
+    L = labels[labels >= -centroid[1]][1:10],
+    T = labels[labels >= -centroid[2]][1:10],
+    R = labels[labels >= -centroid[3]][1:10]
+  )
+
+  # breaks of uncentered grid
+  breaks = data.frame(
+    L = labels$L + centroid[1],
+    T = labels$T + centroid[2],
+    R = labels$R + centroid[3]
+  )
+
+  # grid L
+  gridL =
+    data.frame(
+      scale = 'L',
+      centroid = ifelse(breaks$L == centroid[1], TRUE, FALSE),
+      L_from = breaks$L,
+      T_from = 1-breaks$L,
+      R_from = 0,
+      L_to = breaks$L,
+      T_to = 0,
+      R_to = 1-breaks$L
+    )
+
+  # grid T
+  gridT =
+    data.frame(
+      scale = 'T',
+      centroid = ifelse(breaks$T == centroid[2], TRUE, FALSE),
+      L_from = 0,
+      T_from = breaks$T,
+      R_from = 1-breaks$T,
+      L_to = 1-breaks$T,
+      T_to = breaks$T,
+      R_to = 0
+    )
+
+  # grid R
+  gridR =
+    data.frame(
+      scale = 'R',
+      centroid = ifelse(breaks$R == centroid[3], TRUE, FALSE),
+      L_from = 1-breaks$R,
+      T_from = 0,
+      R_from = breaks$R,
+      L_to = 0,
+      T_to = 1-breaks$R,
+      R_to = breaks$R
+    )
+
+  # grid line coordinates of uncentered grid
+  grid = rbind(gridL, gridT, gridR)
+
+  # grid line coordinates of centered grid
+  cgrid = data.frame(
+    grid[,1:2],
+    prop.table(t(t(grid[,3:5])*(1/centroid)), margin = 1),
+    prop.table(t(t(grid[,6:8])*(1/centroid)), margin = 1)
+  )
+
+  # breaks of centered grid
+  cbreaks = data.frame(L = cgrid[cgrid$scale == 'L', 'L_from'],
+                       T = cgrid[cgrid$scale == 'T', 'T_from'],
+                       R = cgrid[cgrid$scale == 'R', 'R_from'])
+
+  list(grid = grid, cgrid = cgrid,
+       breaks = breaks, cbreaks = cbreaks, labels = labels)
+
+}
+
+# Data -------------------------------------------------------------------------
+
+# EU labour force composition by sector
+load('eu_sectors.RData')
+P <- eu_sectors[,2:4]
+
+# compositional center/mean
+g = apply(P, MARGIN = 2, GeometricMean)
+center = g/sum(g)
+center
+
+# differences from center
+diff_from_center = t(t(P)-center)
+diff_from_center
+rowSums(diff_from_center) # should be 0 or extremely close to 0
+
+# centered proportions
+cP = as.data.frame(Centre(P))
+
+# raw and centered ternary grid-lines and percent-point difference labels
+grids = TernaryCentroidGrid(center)
+
+# Plots ------------------------------------------------------------------------
+
+# colors of gridlines
+grid_col = c('#D23737', '#3191C9', '#BA9314')
+
+# theme for ternary plot
+tern_theme <-
+  theme_bw() +
+  theme_nogrid() +
+  theme(
+    tern.axis.text.L = element_text(colour = grid_col[1]),
+    tern.axis.title.L = element_text(colour = grid_col[1]),
+    tern.axis.text.T = element_text(colour = grid_col[2]),
+    tern.axis.title.T = element_text(colour = grid_col[2]),
+    tern.axis.text.R = element_text(colour = grid_col[3]),
+    tern.axis.title.R = element_text(colour = grid_col[3])
+  )
+
+# plot of the proportions
+plot_prop <-
+  ggtern(grids$grid) +
+  geom_segment(aes(x = L_from, xend = L_to,
+                   y = T_from, yend = T_to,
+                   z = R_from, zend = R_to),
+               color = 'grey', show.legend = FALSE,
+               data = subset(grids$grid, centroid == FALSE)) +
+  geom_point(aes(x = primary, y = secondary, z = tertiary), data = P) +
+    geom_segment(aes(x = L_from, xend = L_to,
+                   y = T_from, yend = T_to,
+                   z = R_from, zend = R_to,
+                   color = scale),
+                 lwd = 1, show.legend = FALSE,
+                 data = subset(grids$grid, centroid == TRUE)) +
+  scale_L_continuous(breaks = grids$breaks$L,
+                     labels = round(grids$breaks$L, 2)) +
+  scale_T_continuous(breaks = grids$breaks$T,
+                     labels = round(grids$breaks$T, 2)) +
+  scale_R_continuous(breaks = grids$breaks$R,
+                     labels = round(grids$breaks$R, 2)) +
+  scale_color_manual(values = grid_col) +
+  labs(x = 'Pri.', y = 'Sec.', z = 'Ter.', title = 'A') +
+  labs(caption = paste0('Compositional mean: ',
+                        paste0(round(center, 2), collapse = ', '))) +
+  tern_theme
+  
+# plot of percent-point differences to the center
+plot_dist <-
+  ggtern(grids$grid) +
+  geom_segment(aes(x = L_from, xend = L_to,
+                   y = T_from, yend = T_to,
+                   z = R_from, zend = R_to),
+               color = 'grey', show.legend = FALSE,
+               data = subset(grids$grid, centroid == FALSE)) +
+  geom_point(aes(x = primary, y = secondary, z = tertiary), data = P) +
+  geom_segment(aes(x = L_from, xend = L_to,
+                   y = T_from, yend = T_to,
+                   z = R_from, zend = R_to,
+                   color = scale),
+               lwd = 1, show.legend = FALSE,
+               data = subset(grids$grid, centroid == TRUE)) +
+  scale_L_continuous(breaks = grids$breaks$L,
+                     labels = round(grids$labels$L, 2)) +
+  scale_T_continuous(breaks = grids$breaks$T,
+                     labels = round(grids$labels$T, 2)) +
+  scale_R_continuous(breaks = grids$breaks$R,
+                     labels = round(grids$labels$R, 2)) +
+  scale_color_manual(values = grid_col) +
+  labs(x = 'Pri.', y = 'Sec.', z = 'Ter.', title = 'B') +
+  tern_theme
+
+# plot of centered percent-point differences to the center
+plot_dist_center <-
+  ggtern(grids$cgrid) +
+  geom_segment(aes(x = L_from, xend = L_to,
+                   y = T_from, yend = T_to,
+                   z = R_from, zend = R_to),
+               color = 'grey', show.legend = FALSE,
+               data = subset(grids$cgrid, centroid == FALSE)) +
+  geom_point(aes(x = primary, y = secondary, z = tertiary), data = cP) +
+  geom_segment(aes(x = L_from, xend = L_to,
+                   y = T_from, yend = T_to,
+                   z = R_from, zend = R_to,
+                   color = scale),
+               lwd = 1, show.legend = FALSE,
+               data = subset(grids$cgrid, centroid == TRUE)) +
+  scale_L_continuous(breaks = grids$cbreaks$L,
+                     labels = round(grids$labels$L, 2)) +
+  scale_T_continuous(breaks = grids$cbreaks$T,
+                     labels = round(grids$labels$T, 2)) +
+  scale_R_continuous(breaks = grids$cbreaks$R,
+                     labels = round(grids$labels$R, 2)) +
+  scale_color_manual(values = grid_col) +
+  labs(x = 'Pri.', y = 'Sec.', z = 'Ter.', title = 'C') +
+  tern_theme
+
+# plot of difference regions
+plot_diff_regions <-
+  ggtern(grids$cgrid) +
+  geom_segment(aes(x = L_from, xend = L_to,
+                   y = T_from, yend = T_to,
+                   z = R_from, zend = R_to),
+               color = 'grey', show.legend = FALSE,
+               data = subset(grids$cgrid, centroid == FALSE)) +
+  geom_segment(aes(x = L_from, xend = L_to,
+                   y = T_from, yend = T_to,
+                   z = R_from, zend = R_to,
+                   color = scale),
+               lwd = 1, show.legend = FALSE,
+               data = subset(grids$cgrid, centroid == TRUE)) +
+  scale_L_continuous(breaks = grids$cbreaks$L,
+                     labels = round(grids$labels$L, 2)) +
+  scale_T_continuous(breaks = grids$cbreaks$T,
+                     labels = round(grids$labels$T, 2)) +
+  scale_R_continuous(breaks = grids$cbreaks$R,
+                     labels = round(grids$labels$R, 2)) +
+  annotate('text', x = 0.9, y = 0.05, z = 0.05, label = 'A') +
+  annotate('text', x = 0.5, y = 0.4, z = 0.1, label = 'B') +
+  annotate('text', x = 0.1, y = 0.7, z = 0.2, label = 'C') +
+  annotate('text', x = 0.04, y = 0.49, z = 0.47, label = 'D') +
+  annotate('text', x = 0.2, y = 0.2, z = 0.6, label = 'E') +
+  annotate('text', x = 0.5, y = 0.1, z = 0.4, label = 'F') +
+  scale_color_manual(values = grid_col) +
+  labs(x = 'Pri.', y = 'Sec.', z = 'Ter.', title = 'D') +
+  tern_theme
+
+# Figure 2, regions of deviation -----------------------------------------------
+
+library(dplyr)
+
+
+data.frame(
+  center = c('(1/3, 1/3, 1/3)',
+             '(2/4, 1/4, 1/4)',
+             '(1/4, 2/4, 1/4)',
+             '(1/4, 1/4, 2/4)',
+             '(0.04, 0.24, 0.72)'),
+  rbind(
+  c(1/3, 1/3, 1/3),
+  c(2/4, 1/4, 1/4),
+  c(1/4, 2/4, 1/4),
+  c(1/4, 1/4, 2/4),
+  c(0.04, 0.24, 0.72)
+  )
+)
+```
+
+Von Eynatten etal. (2002) proposed a method to center data in a ternary diagram in order to better visualize the internal structure of very unbalanced compositions. Here I show that data visualized in such a way can easily be interpreted in terms of the percent-point difference of an observation to the average of the composition (the center).
+
+Figure 1A shows the labor force composition in the year 2016 for 318 regions of the European Union. The data is quite unbalanced with most regions featuring a high share of employment in the ternary and a low share in the primary sector. One may ask the question how each observation compares to the labor-force composition of the average EU region. The conventional measure of central tendency for a compositional data set is the *center* (Aitchison 1986, 1989).
+
+**Definition 1**: Let $\textbf{P}$ be a $n\times 3$ matrix of three part compositions with unit sum constraint. The *center* of this data set is the closed geometric mean, defined as $\textbf{g} = \frac{g_j}{\sum_j g_j}$, with $g_j = (\prod_{i=1}^n p_{ij})^{1/n}$ for $j=1,2,3$.
+
+Because the center of the compositional data set is itself a composition it can be annotated in a ternary diagram. In Figure 1A the center of the data is marked by the intersection of three coloured lines: In 2016, the average EU region had a labor-force composition of 4% primary, 24% secondary and 72% tertiary sector.
+
+```{r fig.cap='2016 EU labor force composition by NUTS-2 region in different projections. Coloured lines mark the labor force composition of the average region. B: 2016 EU labor force composition by NUTS-2 region in terms of the percent-point difference to the average EU region. D: The center lines segment the ternary diagram into 6 regions.', echo=FALSE}
+ggtern::grid.arrange(plot_prop,
+                     plot_dist,
+                     plot_dist_center,
+                     plot_diff_regions,
+                     ncol = 2)
+```
+
+The grid lines of Figure 1 are repeated in 10 percent-point steps from the red center lines. Such a grid can easily be transformed to show percentage point difference of a composition from its center, one simply has to substract the compositional mean from the grid line labels.
+
+**Definition 2**: Let $\textbf{d}$ be the (percent)-point difference of a composition to its center, defined as $\textbf{d}_j=\textbf{p}_j-\textbf{g}_j$ for $j=1,2,3$.
+
+Because $\textbf{p}_j$ and $\textbf{g}_j$ have a domain of $[0,1]$ the range of possible values for $\textbf{d}_j$ is $[-\textbf{g}_j, 1-\textbf{g}_j]$ for $j=1,2,3$. Due to the unit-sum constraint on $\textbf{p}$ and $\textbf{g}$ the sum of $\textbf{d}_j$ is constraint to be 0.
+
+Figure 2 shows the labor-force composition of EU regions in terms of their percent-point differences from the average EU region in 2016. The three coordinates defining a point on such a transformed ternary diagram are either negative or positive and always add up to 0. The coordinate (0, 0, 0) denotes the center of the data. Note that the position of the data did not change from Figure 1, only the labeling of the grid.
+
+In order to better visualize the variance within such unbalanced compositions Von Eynatten etal. (2002) propose to transform the data in a way that moves it towards the center of the diagram, specifically, to pertube the data and the gridlines by the inverse of the compositional mean of the data.
+
+Performing the centering transformation described by Von Eynatten etal. (2002) on the data and the grid lines while keeping the percent-point difference labels results in a percent-point difference ternary diagram with the compositional mean at its center.
+
+The red lines divide the ternary diagram in 6 segments (see figure 4).
+
+- A: More than average share of primary sector labor force, less than average share of secondary and tertiary sector labor force,
+- B: more than average share of primary and secondary sector labor force, less than average share of tertiary sector labor force,
+- C: more than average share of secondary sector labor force, less than average share of primary and tertiary sector labor force,
+- D: more than average share of secondary and tertiary sector labor force, less than average share of primary sector labor force,
+- E: more than average share of tertiary sector labor force, less than average share of primary and secondary sector labor force, and finally
+- F: more than average share of tertiary and primary sector labor force, less than average share of secondary sector labor force.
+
+While the size and shape of the six segments depends on the center of the data, the interpretation of the segments given above is always true.
+
+References
+----------
+
+[1] Von Eynatten, H., Pawlowsky-Glahn, V., & Egozcue, J. J. (2002). Understanding perturbation on the simplex: A simple method to better visualize and interpret compositional data in ternary diagrams. Mathematical Geology, 34(3), 249--257. https://doi.org/10.1023/A:1014826205533
+
+[2] Aitchison, J. (1986). The Statistical Analysis of Compositional Data (1st ed.). London: Chapmann and Hall.
+
+[3] Aitchison, J. (1989). Measures of Location of Compositional Data Sets. Mathematical Geology, 21(7), 787–790.
