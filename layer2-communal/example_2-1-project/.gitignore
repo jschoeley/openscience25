@@ -1,0 +1,23 @@
+# private folder
+pvt
+
+# R specific ------------------------------------------------------------------
+
+# History files
+.Rhistory
+.Rapp.history
+
+# RStudio files
+.Rproj.user/
+.Rproj.user
+.Rproj
+
+# Example code in package build process
+#*-Ex.R
+
+# produced vignettes
+#vignettes/*.html
+#vignettes/*.pdf
+
+# cached Rmarkdown files
+*_cache

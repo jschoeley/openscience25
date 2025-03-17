@@ -1,0 +1,23 @@
+# Global constants for configuration
+---
+# CRS to use for maps
+crs: 3035
+# European map boundaries
+eurocrop:
+  xmin: 25.0e+5
+  xmax: 75.0e+5
+  ymin: 13.5e+5
+  ymax: 54.5e+5
+# ternary color coding specs
+colorscale: 
+  hue: 80
+  chroma: 170
+  lightness: 90
+  contrast: 0.7
+  grid_intercept: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+  grid_color: 'grey5'
+  grid_size: 0.1
+  fig_width: 6
+  fig_height: 6
+  barycenter: [0.333, 0.333, 0.333]
+...

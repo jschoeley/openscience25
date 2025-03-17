@@ -24,6 +24,7 @@ Jonas Schöley & Egor Kotov
 
 - [Example 1-1](https://github.com/jschoeley/openscience25/tree/main/layer1-personal/example_1-1)
 - [Project template](https://github.com/jschoeley/openscience25/tree/main/layer1-personal/template/template.zip)
+- [Paper to reproduce](https://www.demographic-research.org/articles/volume/44/19)
 
 ### Exercises
 
