@@ -26,15 +26,13 @@ Jonas Schöley & Egor Kotov
 - [Project template](https://github.com/jschoeley/openscience25/tree/main/layer1-personal/template/template.zip)
 - [Paper to reproduce](https://www.demographic-research.org/articles/volume/44/19)
 
-### Exercises
-
 ## Layer 2: Communal reproducibility
 
 ### Topics
 
 1. Code repositories
 	1. The git version control system
-	2. Github/Gitlab/Codeberg as online code repositories (+https://gitlab.gwdg.de/ and similar as institutional repos)
+	2. Github/Gitlab/Codeberg as online code repositories
 	3. Keeping private things private
 	4. Code documentation
 	5. Large file
@@ -46,7 +44,7 @@ Jonas Schöley & Egor Kotov
 	5. Data documentation
 3. Advertisement of your shared resources
 
-### Exercises
+- [Example 1-2](https://github.com/jschoeley/openscience25/tree/main/layer2-communal/example_2-1)
 
 ## Layer 3: Computational reproducibility
 
@@ -66,3 +64,7 @@ Jonas Schöley & Egor Kotov
 	4. Building your own
 
 ### Exercises
+
+- [Egors Repository](https://www.ekotov.pro/2025-mpidr-open-science-reproducible-workflows/)
+- [Excercise 1: renv](https://www.ekotov.pro/2025-mpidr-open-science-reproducible-workflows/1-r-packages.html)
+- [Excercise 2: targets](https://www.ekotov.pro/2025-mpidr-open-science-reproducible-workflows/2-analysis-pipeline.html)
