@@ -22,8 +22,9 @@ Jonas Schöley & Egor Kotov
 
 ### Examples
 
-- [Example 1-1](https://github.com/jschoeley/openscience25/tree/main/layer1-personal/example_1-1)
-- [Project template](https://github.com/jschoeley/openscience25/tree/main/layer1-personal/template/template.zip)
+- [Example 1-1](https://github.com/jschoeley/openscience25/tree/main/layer1-personal/example_1-1-project)
+- [Project template](https://github.com/jschoeley/openscience25/tree/main/layer1-personal/example_1-3-template)
+- [Project diary](https://github.com/jschoeley/openscience25/blob/main/layer1-personal/example_1-2-diary/diary.md)
 - [Paper to reproduce](https://www.demographic-research.org/articles/volume/44/19)
 
 ## Layer 2: Communal reproducibility
